@@ -3,6 +3,11 @@ package ru.ramil.homeworkLesson1.Competitors;
 import ru.ramil.homeworkLesson1.Obstacles.*;
 
 public interface Competitor {
+
+    String getName();
+    float getMaxRunLength();
+    float getMaxJumpHeight();
+
     boolean run(RunningTrack track);
     boolean jump(Wall wall);
 

@@ -13,17 +13,32 @@ public class Cat implements Competitor {
     private final float maxRunLength;
     private final float maxJumpHeight;
     private final String name;
-    private final StringBuilder message;
+    private final MessageBuilder message;
 
     public Cat(String name, float maxRunLength, float maxJumpHeight) {
         this.name = name;
         this.maxRunLength = maxRunLength;
         this.maxJumpHeight = maxJumpHeight;
-        message = new StringBuilder();
+        message = new MessageBuilder();
     }
 
     public Cat(String name) {
         this(name, getRandomMaxRunLength(), getRandomMaxJumpLength());
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public float getMaxRunLength() {
+        return maxRunLength;
+    }
+
+    @Override
+    public float getMaxJumpHeight() {
+        return maxJumpHeight;
     }
 
     private static float getRandomMaxRunLength() {
@@ -39,10 +54,10 @@ public class Cat implements Competitor {
         boolean result = false;
         float length = track.getLength();
         if(maxRunLength >= length) {
-            insertSuccessfulResultInMessage(track);
+            message.insertSuccessfulResult(this, track);
             result = true;
         } else {
-            insertUnsuccessfulResultInMessage(track);
+            message.insertUnsuccessfulResult(this, track);
         }
         System.out.println(message);
         return result;
@@ -53,54 +68,20 @@ public class Cat implements Competitor {
         boolean result = false;
         float wallHeight = wall.getHeight();
         if(maxJumpHeight >= wallHeight) {
-            insertSuccessfulResultInMessage(wall);
+            message.insertSuccessfulResult(this, wall);
             result = true;
         } else {
-            insertUnsuccessfulResultInMessage(wall);
+            message.insertUnsuccessfulResult(this, wall);
         }
         System.out.println(message);
         return result;
-    }
-
-    private void insertSuccessfulResultInMessage(Obstacle obstacle) {
-        message.delete(0, message.length());
-        message.append("Кошка по имени ");
-        message.append(name);
-        if(obstacle instanceof RunningTrack) {
-            message.append(" успешно пробежала ");
-            message.append(((RunningTrack)obstacle).getLength());
-            message.append("м.");
-        } else if(obstacle instanceof Wall) {
-            message.append(" успешно перепрыгнула через ");
-            message.append(((Wall)obstacle).getHeight());
-            message.append("м.");
-        }
-    }
-
-    private void insertUnsuccessfulResultInMessage(Obstacle obstacle) {
-        message.delete(0, message.length());
-        message.append("Кошка по имени ");
-        message.append(name);
-        if(obstacle instanceof RunningTrack) {
-            message.append(" не смогла пробежать ");
-            message.append(((RunningTrack)obstacle).getLength());
-            message.append("м, т.к. максимальное расстояние, которое она может пробежать ");
-            message.append(maxRunLength);
-            message.append("м!");
-        } else if(obstacle instanceof Wall) {
-            message.append(" не смогла перепрыгнуть через стену высотой ");
-            message.append(((Wall)obstacle).getHeight());
-            message.append("м, т.к. максимальная высота, через которую она может перепрыгнуть ");
-            message.append(maxJumpHeight);
-            message.append("м!");
-        }
     }
 
     @Override
     public String toString() {
         return "Кошка\n" +
                 "Имя: " + name + "\n" +
-                "Максимальное расстояние, которое может пробежать: " + maxRunLength + "\n" +
-                "Максимальная высота, через которую может перепрыгнуть: " + maxJumpHeight + "\n";
+                "Максимальное расстояние, которое может пробежать: " + maxRunLength + "м\n" +
+                "Максимальная высота, через которую может перепрыгнуть: " + maxJumpHeight + "м\n";
     }
 }
