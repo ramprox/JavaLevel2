@@ -3,6 +3,7 @@ package ru.ramil.homeworkLesson6;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.Scanner;
 
 public class Server {
@@ -14,10 +15,17 @@ public class Server {
     private static Socket socket;
     private static DataInputStream dis;
     private static DataOutputStream dos;
-    private static final Scanner scanner = new Scanner(System.in, "IBM866");
+    private static Scanner scanner;
 
+    // В аргументе можно передать кодировку командной строки (по умолчанию используется "IBM866", т.к.
+    // эта кодировка используется по умолчанию в ОС Windows (русская версия)).
+    // В консоли Intellij IDEA используется "UTF-8". Если не задать корректную кодировку
+    // при отправлении сообщения на русском языке с консоли сервера
+    // на стороне клиента будут "кракозябры".
     public static void main(String[] args) {
+        String codePage = args.length > 0 ? args[0] : "IBM866";
         try {
+            scanner = new Scanner(System.in, codePage);
             serverSocket = new ServerSocket(8189);
             System.out.println("Сервер стартанул. Ожидание клиента...");
             socket = serverSocket.accept();
@@ -48,11 +56,13 @@ public class Server {
                 String messageToClient;
                 do {
                     messageToClient = scanner.nextLine();
-                } while(messageFromClient.trim().isEmpty());
+                } while(messageToClient.trim().isEmpty());
                 dos.writeUTF(messageToClient);
             }
         } catch (IOException ignored) {
             System.out.println("Соединение разорвано.");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         finally {
             close();
@@ -60,7 +70,9 @@ public class Server {
     }
 
     private static void close() {
-        scanner.close();
+        if(scanner != null) {
+            scanner.close();
+        }
         if(serverSocket != null) {
             try {
                 serverSocket.close();
