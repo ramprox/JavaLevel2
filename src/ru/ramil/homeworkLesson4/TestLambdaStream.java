@@ -1,4 +1,4 @@
-package ru.ramil.homeworkLesson4.Lambda;
+package ru.ramil.homeworkLesson4;
 
 import java.util.*;
 import java.util.stream.Collectors;
